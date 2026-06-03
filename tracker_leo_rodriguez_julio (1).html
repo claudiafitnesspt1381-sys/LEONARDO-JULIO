@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracker — Leo Rodríguez · Julio 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D1B2A;--navy2:#162437;--navy3:#1E3050;
+  --orange:#E8571A;--orange2:#FF7340;--gold:#C8962A;--gold2:#E5B340;
+  --green:#2ECC8A;--blue:#3B8BEB;
+  --cream:#F5F0E8;--gray:#8A9BB0;--gray2:#B8C6D6;
+  --line:rgba(255,255,255,0.07);--r:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--cream);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:60px}
+
+.hdr{background:var(--navy2);border-bottom:2px solid var(--orange);padding:18px 28px 14px;position:sticky;top:0;z-index:200;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr-name{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;line-height:1;color:#fff}
+.hdr-name span{color:var(--orange)}
+.hdr-sub{font-size:.7rem;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;font-weight:500}
+.hdr-right{display:flex;align-items:center;gap:18px}
+.hstat{text-align:right}
+.hstat-v{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;color:#fff}
+.hstat-l{font-size:.6rem;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+.unit-toggle{display:flex;border:1px solid rgba(255,255,255,0.12);border-radius:6px;overflow:hidden}
+.unit-btn{padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;background:transparent;color:var(--gray);border:none;letter-spacing:.5px}
+.unit-btn.active{background:var(--orange);color:#fff}
+
+.wrap{max-width:980px;margin:0 auto;padding:24px 20px 0}
+
+.week-row{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}
+.w-btn{flex:1;min-width:100px;background:var(--navy2);border:1px solid var(--line);border-radius:var(--r);padding:9px 10px;cursor:pointer;color:var(--gray);font-family:'DM Sans',sans-serif;text-align:center;transition:all .18s}
+.w-btn .wn{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;display:block;color:var(--gray2);letter-spacing:1px}
+.w-btn .wp{font-size:.62rem;text-transform:uppercase;letter-spacing:.8px;display:block;margin-top:1px}
+.w-btn:hover{border-color:rgba(232,87,26,.4);color:var(--cream)}
+.w-btn.active{background:var(--orange);border-color:var(--orange);color:#fff}
+.w-btn.active .wn,.w-btn.active .wp{color:#fff}
+
+.day-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:20px}
+.d-btn{background:var(--navy2);border:1px solid var(--line);border-radius:var(--r);padding:11px 8px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--gray);transition:all .18s;text-align:center}
+.d-btn .dc{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;display:block;color:var(--gray2)}
+.d-btn .dd{font-size:.63rem;text-transform:uppercase;letter-spacing:.8px;display:block;margin-top:2px;line-height:1.3}
+.d-btn .dt{font-size:.58rem;display:block;margin-top:4px;padding:2px 6px;border-radius:4px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.dt-u{background:rgba(232,87,26,.18);color:var(--orange2)}
+.dt-l{background:rgba(200,150,42,.18);color:var(--gold)}
+.d-btn:hover{border-color:rgba(255,255,255,.15);color:var(--cream)}
+.d-btn.act-u{background:rgba(232,87,26,.15);border-color:var(--orange);color:#fff}
+.d-btn.act-u .dc{color:var(--orange)}
+.d-btn.act-l{background:rgba(200,150,42,.12);border-color:var(--gold);color:#fff}
+.d-btn.act-l .dc{color:var(--gold)}
+
+.ses-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:9px 14px;background:var(--navy2);border-radius:var(--r);border-left:3px solid var(--orange)}
+.ses-ph{font-size:.77rem;color:var(--gray2)}
+.ses-rpe{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--orange2);margin-left:auto;white-space:nowrap}
+.ses-dur{font-size:.68rem;color:var(--gray);margin-left:14px;white-space:nowrap}
+
+.sec-hdr{display:flex;align-items:center;gap:10px;margin:18px 0 10px}
+.sec-hdr-label{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;white-space:nowrap}
+.sec-hdr-line{flex:1;height:1px;background:var(--line)}
+.sec-hdr-badge{font-size:.62rem;padding:2px 8px;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.badge-warm{background:rgba(59,139,235,.18);color:var(--blue)}
+.badge-str{background:rgba(232,87,26,.18);color:var(--orange2)}
+.badge-hiit{background:rgba(46,204,138,.18);color:var(--green)}
+
+.warm-table{width:100%;border-collapse:collapse;margin-bottom:4px}
+.warm-table thead th{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--gray);padding:6px 10px;border-bottom:1px solid var(--line);background:var(--navy2);text-align:left}
+.warm-table thead th:not(:first-child){text-align:center}
+.warm-table tbody tr{border-bottom:1px solid var(--line)}
+.warm-table tbody tr:hover{background:rgba(59,139,235,.04)}
+.warm-table td{padding:7px 10px;font-size:.8rem;vertical-align:middle}
+.warm-name{color:var(--gray2);line-height:1.3}
+.warm-sets{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--blue);text-align:center}
+.warm-note{font-size:.7rem;color:var(--gray);font-style:italic}
+
+.group-badge{display:inline-block;font-size:.58rem;font-weight:700;padding:1px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.gb-bi{background:rgba(200,150,42,.18);color:var(--gold)}
+.gb-tri{background:rgba(232,87,26,.18);color:var(--orange2)}
+
+.ex-table{width:100%;border-collapse:collapse}
+.ex-table thead th{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--gray);padding:7px 9px;border-bottom:1px solid var(--line);background:var(--navy2);text-align:left}
+.ex-table thead th:not(:first-child){text-align:center}
+.ex-table tbody tr{border-bottom:1px solid var(--line);transition:background .12s}
+.ex-table tbody tr:last-child{border-bottom:none}
+.ex-table tbody tr:hover{background:rgba(255,255,255,.025)}
+.ex-table tr.group-top td:first-child{padding-top:12px}
+.ex-table tr.group-bot td{padding-bottom:12px;border-bottom:2px solid var(--line)}
+.ex-table td{padding:7px 9px;vertical-align:middle}
+.ex-num{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--gray);width:22px;text-align:center}
+.ex-name{font-size:.8rem;color:var(--cream);line-height:1.3}
+.ex-reps-hint{font-size:.65rem;color:var(--gray);font-style:italic;margin-top:2px}
+.ex-ser{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--gray2);text-align:center}
+
+.inp-cell{text-align:center}
+.inp-g{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.inp-g input{width:54px;background:var(--navy);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#fff;font-family:'DM Mono',monospace;font-size:.83rem;font-weight:500;padding:5px 3px;text-align:center;transition:border-color .15s;-moz-appearance:textfield}
+.inp-g input::-webkit-outer-spin-button,.inp-g input::-webkit-inner-spin-button{-webkit-appearance:none}
+.inp-g input:focus{outline:none;border-color:var(--orange);background:rgba(232,87,26,.06)}
+.inp-g input.has-v{border-color:rgba(232,87,26,.4);color:var(--orange2)}
+.inp-lbl{font-size:.58rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+.note-inp{width:88px;background:var(--navy);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:var(--gray2);font-family:'DM Sans',sans-serif;font-size:.7rem;padding:5px 6px;text-align:center;transition:border-color .15s}
+.note-inp:focus{outline:none;border-color:rgba(255,255,255,.25);color:var(--cream)}
+
+/* HIIT */
+.hiit-card{background:var(--navy2);border:1px solid rgba(46,204,138,.2);border-radius:var(--r);padding:14px 16px;margin-top:4px}
+.hiit-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.hiit-tag{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--green);white-space:nowrap}
+.hiit-meta{flex:1}
+.hiit-desc{font-size:.75rem;color:var(--gray2);line-height:1.5}
+.hiit-time-row{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.hiit-pill{font-size:.62rem;padding:2px 8px;border-radius:4px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.pill-green{background:rgba(46,204,138,.18);color:var(--green)}
+.pill-gray{background:rgba(138,155,176,.15);color:var(--gray2)}
+.hiit-rounds{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.hiit-round{display:flex;align-items:flex-start;gap:10px;padding:7px 10px;background:rgba(0,0,0,.2);border-radius:7px}
+.round-num{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--green);min-width:28px;line-height:1}
+.round-body{}
+.round-ex{font-size:.77rem;color:var(--cream);font-weight:500;line-height:1.35}
+.round-detail{font-size:.67rem;color:var(--green);margin-top:2px;font-family:'DM Mono',monospace}
+.hiit-log{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.hiit-log label{font-size:.67rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+.hiit-log input{background:var(--navy);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#fff;font-family:'DM Mono',monospace;font-size:.78rem;padding:4px 8px;text-align:center;-moz-appearance:textfield}
+.hiit-log input::-webkit-outer-spin-button,.hiit-log input::-webkit-inner-spin-button{-webkit-appearance:none}
+.hiit-log input:focus{outline:none;border-color:var(--green)}
+
+.acts{display:flex;gap:9px;margin-top:16px;align-items:center;flex-wrap:wrap}
+.btn-save{padding:9px 22px;background:var(--orange);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-save:hover{background:var(--orange2)}
+.btn-save:active{transform:scale(.97)}
+.btn-clr{padding:9px 16px;background:transparent;color:var(--gray);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:all .15s}
+.btn-clr:hover{border-color:rgba(255,255,255,.25);color:var(--cream)}
+.save-ok{font-size:.78rem;color:#4caf7d;opacity:0;transition:opacity .3s;font-weight:500}
+.save-ok.show{opacity:1}
+
+.prog-sec{margin-top:28px}
+.prog-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--gray);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.prog-title::after{content:'';flex:1;height:1px;background:var(--line)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:16px}
+.sc{background:var(--navy2);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px}
+.sc .sv{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:#fff;letter-spacing:1px;line-height:1}
+.sc .sl{font-size:.62rem;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+.sc .ss{font-size:.68rem;color:var(--gray2);margin-top:2px}
+.pb{height:3px;background:rgba(255,255,255,.07);border-radius:99px;margin-top:9px}
+.pbi{height:3px;border-radius:99px;background:var(--orange);transition:width .5s ease}
+.wk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wk-c{background:var(--navy2);border:1px solid var(--line);border-radius:var(--r);padding:11px}
+.wk-t{font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:1px;color:var(--gray);margin-bottom:7px}
+.wk-days{display:flex;gap:4px}
+.wk-d{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.07);transition:background .3s}
+.wk-d.du{background:var(--orange)}
+.wk-d.dl{background:var(--gold)}
+.wk-p{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--gray2);margin-top:5px}
+
+@media(max-width:620px){
+  .hdr{padding:14px 16px 12px}
+  .hdr-name{font-size:1.7rem}
+  .wrap{padding:16px 12px 0}
+  .day-row{grid-template-columns:repeat(2,1fr)}
+  .wk-grid{grid-template-columns:repeat(2,1fr)}
+  .hstat:first-child{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div>
+    <div class="hdr-name">Leo <span>Rodríguez</span></div>
+    <div class="hdr-sub">Tracker Hipertrofia · Julio 2025 · 4 semanas · ~60 min/sesión</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hstat"><div class="hstat-v" id="hSes">0/16</div><div class="hstat-l">Sesiones</div></div>
+    <div class="hstat"><div class="hstat-v" id="hPct">0%</div><div class="hstat-l">Completado</div></div>
+    <div class="unit-toggle">
+      <button class="unit-btn active" id="uKg" onclick="setUnit('kg')">KG</button>
+      <button class="unit-btn" id="uLb" onclick="setUnit('lb')">LB</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="week-row" id="weekRow"></div>
+  <div class="day-row" id="dayRow"></div>
+  <div class="ses-bar">
+    <span class="ses-ph" id="sesPhase">—</span>
+    <span class="ses-dur" id="sesDur">—</span>
+    <span class="ses-rpe" id="sesRpe">—</span>
+  </div>
+
+  <div class="sec-hdr">
+    <span class="sec-hdr-label" style="color:var(--blue)">Calentamiento</span>
+    <span class="sec-hdr-badge badge-warm">3 ejercicios · 2 sets · ~8 min</span>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <table class="warm-table">
+    <thead><tr><th style="width:44%">Ejercicio</th><th>Sets × Reps</th><th>Indicación</th></tr></thead>
+    <tbody id="warmBody"></tbody>
+  </table>
+
+  <div class="sec-hdr">
+    <span class="sec-hdr-label" style="color:var(--orange)">Bloque de Fuerza</span>
+    <span class="sec-hdr-badge badge-str">Biseries / Triseries · ~44 min</span>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <table class="ex-table">
+    <thead><tr>
+      <th style="width:2%"></th>
+      <th style="width:36%">Ejercicio</th>
+      <th style="width:7%;text-align:center">Series</th>
+      <th style="text-align:center">Peso</th>
+      <th style="text-align:center">Reps</th>
+      <th style="text-align:center">RPE real</th>
+      <th style="text-align:center">Notas</th>
+    </tr></thead>
+    <tbody id="exBody"></tbody>
+  </table>
+
+  <div class="sec-hdr">
+    <span class="sec-hdr-label" style="color:var(--green)">HIIT Final</span>
+    <span class="sec-hdr-badge badge-hiit" id="hiitBadge">6 min</span>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="hiit-card" id="hiitCard"></div>
+
+  <div class="acts">
+    <button class="btn-save" onclick="save()">Guardar sesión</button>
+    <button class="btn-clr" onclick="clearSes()">Limpiar</button>
+    <span class="save-ok" id="saveOk">✓ Guardado</span>
+  </div>
+
+  <div class="prog-sec">
+    <div class="prog-title">Progreso del bloque</div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="wk-grid" id="wkGrid"></div>
+  </div>
+</div>
+
+<script>
+const WEEKS=[
+  {n:1,ph:"Acumulación — técnica y volumen base",rpe:"RPE objetivo 7–8",dur:"~60 min"},
+  {n:2,ph:"Volumen — mayor densidad de trabajo",rpe:"RPE objetivo 7–8",dur:"~60 min"},
+  {n:3,ph:"Intensidad — cargas altas, menos reps",rpe:"RPE objetivo 8–9",dur:"~60 min"},
+  {n:4,ph:"Descarga activa / Test 3RM estimado",rpe:"RPE objetivo 6",dur:"~55 min"},
+];
+const DAYS=[
+  {id:"A",lbl:"Día A",desc:"Tren superior 1",type:"upper"},
+  {id:"B",lbl:"Día B",desc:"Tren inferior 1",type:"lower"},
+  {id:"C",lbl:"Día C",desc:"Tren superior 2",type:"upper"},
+  {id:"D",lbl:"Día D",desc:"Tren inferior 2",type:"lower"},
+];
+
+// Equipamiento: poleas doble, barra+discos, mancuernas, leg ext, leg curl, balón medicinal, banco hiperextensión
+const WARM={
+  A:[
+    {n:"Apertura de pecho en foam roller / banco (extensión torácica)",sets:"2×10",note:"Sostén 2 seg en extensión"},
+    {n:"Rotación externa con banda (90/90 de hombro)",sets:"2×12 c/l",note:"Codo pegado al cuerpo"},
+    {n:"Plancha frontal isométrica",sets:"2×30 seg",note:"Exhala continuo, core activo"},
+  ],
+  B:[
+    {n:"Movilidad de cadera 90/90 en suelo",sets:"2×8 c/l",note:"Transición lenta y controlada"},
+    {n:"Bird dog (cuadrupedia)",sets:"2×10 c/l",note:"Columna neutra, sin rotar cadera"},
+    {n:"Puente de glúteo con banda (activación)",sets:"2×15",note:"Aprieta 1 seg en la cima"},
+  ],
+  C:[
+    {n:"Dislocación de hombros con palo / banda",sets:"2×12",note:"Agarre ancho, codos sin doblar"},
+    {n:"Face pull con polea alta (cuerda) — ligero",sets:"2×15",note:"Codos a altura de hombros"},
+    {n:"Plancha lateral",sets:"2×20 seg c/l",note:"Caderas alineadas, respira"},
+  ],
+  D:[
+    {n:"Sentadilla con peso corporal (patrón y rango)",sets:"2×10",note:"Talones pegados, tronco erguido"},
+    {n:"Buenos días con barra vacía (patrón bisagra)",sets:"2×10",note:"Bisagra cadera, columna neutral"},
+    {n:"Bird dog / plancha lumbar",sets:"2×10 c/l",note:"Alterna brazo–pierna opuestos"},
+  ],
+};
+
+const GROUPS={
+  A:[
+    {type:"bi",label:"Biserie 1",exs:[
+      {n:"Press de banca con barra",repsHint:"S1:4×8 | S2:4×10 | S3:5×5 | S4:3×5 test",s:[4,4,5,3]},
+      {n:"Remo en polea baja sentado (grip neutro)",repsHint:"S1:4×10 | S2:4×12 | S3:4×8 | S4:3×10",s:[4,4,4,3]},
+    ]},
+    {type:"tri",label:"Triserie 1",exs:[
+      {n:"Press inclinado con mancuernas (30°)",repsHint:"S1:3×10 | S2:3×12 | S3:4×8 | S4:3×10",s:[3,3,4,3]},
+      {n:"Dominadas / jalón al pecho polea",repsHint:"S1:4×8 | S2:4×10 | S3:5×5 | S4:3×8",s:[4,4,5,3]},
+      {n:"Curl bíceps con mancuernas",repsHint:"S1:3×12 | S2:3×15 | S3:3×10 | S4:2×12",s:[3,3,3,2]},
+    ]},
+    {type:"bi",label:"Biserie 2",exs:[
+      {n:"Aperturas polea alta cruzada (cables cruzados)",repsHint:"S1:3×12 | S2:3×15 | S3:3×12 | S4:2×15",s:[3,3,3,2]},
+      {n:"Pullover con mancuerna en banco inclinado",repsHint:"S1:3×12 | S2:4×12 | S3:3×10 | S4:2×12",s:[3,4,3,2]},
+    ]},
+  ],
+  B:[
+    {type:"bi",label:"Biserie 1",exs:[
+      {n:"Sentadilla con barra (back squat)",repsHint:"S1:4×8 | S2:4×10 | S3:5×5 | S4:3×5 test",s:[4,4,5,3]},
+      {n:"Leg curl en máquina",repsHint:"S1:4×12 | S2:4×12 | S3:4×10 | S4:3×12",s:[4,4,4,3]},
+    ]},
+    {type:"tri",label:"Triserie 1",exs:[
+      {n:"Zancada inversa con mancuernas",repsHint:"S1:3×10 c/l | S2:4×10 | S3:4×8 | S4:3×10",s:[3,4,4,3]},
+      {n:"Leg extension en máquina",repsHint:"S1:3×15 | S2:3×15 | S3:3×12 | S4:2×15",s:[3,3,3,2]},
+      {n:"Hip thrust con mancuerna en suelo*",repsHint:"S1:4×12 | S2:4×15 | S3:4×10 | S4:3×12",s:[4,4,4,3]},
+    ]},
+    {type:"bi",label:"Biserie 2",exs:[
+      {n:"Peso muerto rumano con mancuernas* (rango parcial)",repsHint:"S1:3×10 | S2:4×10 | S3:4×8 | S4:2×10",s:[3,4,4,2]},
+      {n:"Press de hombro con mancuernas (sentado, neutro)",repsHint:"S1:4×10 | S2:4×12 | S3:5×6 | S4:3×10",s:[4,4,5,3]},
+    ]},
+    {type:"bi",label:"Biserie 3",exs:[
+      {n:"Elevaciones laterales con mancuernas",repsHint:"S1:3×15 | S2:4×15 | S3:4×12 | S4:3×15",s:[3,4,4,3]},
+      {n:"Face pull polea alta (cuerda)",repsHint:"S1:3×15 | S2:3×15 | S3:3×12 | S4:2×15",s:[3,3,3,2]},
+    ]},
+  ],
+  C:[
+    {type:"bi",label:"Biserie 1",exs:[
+      {n:"Press banca inclinado con barra",repsHint:"S1:4×8 | S2:4×10 | S3:5×5 | S4:3×6",s:[4,4,5,3]},
+      {n:"Remo con mancuerna a una mano (apoyo en banco)",repsHint:"S1:4×10 | S2:4×12 | S3:4×8 | S4:3×10",s:[4,4,4,3]},
+    ]},
+    {type:"tri",label:"Triserie 1",exs:[
+      {n:"Fondos en paralelas (asistido o con lastre)",repsHint:"S1:3×10 | S2:3×12 | S3:4×8 | S4:2×10",s:[3,3,4,2]},
+      {n:"Jalón polea agarre cerrado neutro",repsHint:"S1:4×10 | S2:4×12 | S3:4×8 | S4:3×10",s:[4,4,4,3]},
+      {n:"Tríceps en polea (cuerda)",repsHint:"S1:3×12 | S2:3×15 | S3:3×10 | S4:2×12",s:[3,3,3,2]},
+    ]},
+    {type:"bi",label:"Biserie 2",exs:[
+      {n:"Aperturas con mancuernas en banco plano",repsHint:"S1:3×12 | S2:3×15 | S3:3×10 | S4:2×12",s:[3,3,3,2]},
+      {n:"Remo polea alta cuerda (agarre neutro)",repsHint:"S1:3×12 | S2:3×15 | S3:3×12 | S4:2×15",s:[3,3,3,2]},
+    ]},
+  ],
+  D:[
+    {type:"bi",label:"Biserie 1",exs:[
+      {n:"Sentadilla goblet con mancuerna / kettlebell",repsHint:"S1:3×12 | S2:4×12 | S3:4×10 | S4:3×10",s:[3,4,4,3]},
+      {n:"Leg curl en máquina (unilateral)",repsHint:"S1:3×12 | S2:3×15 | S3:4×10 | S4:3×12",s:[3,3,4,3]},
+    ]},
+    {type:"tri",label:"Triserie 1",exs:[
+      {n:"Zancada búlgara con mancuernas",repsHint:"S1:3×10 c/l | S2:4×10 | S3:4×8 | S4:2×10",s:[3,4,4,2]},
+      {n:"Buenos días con barra (glúteo–isquio)",repsHint:"S1:3×10 | S2:3×12 | S3:4×8 | S4:2×10",s:[3,3,4,2]},
+      {n:"Extensión en banco de hiperextensión",repsHint:"S1:3×12 | S2:4×12 | S3:4×10 | S4:3×12",s:[3,4,4,3]},
+    ]},
+    {type:"bi",label:"Biserie 2",exs:[
+      {n:"Elevaciones laterales en polea baja",repsHint:"S1:3×15 | S2:4×15 | S3:4×12 | S4:3×15",s:[3,4,4,3]},
+      {n:"Remo al mentón polea baja (agarre ancho)",repsHint:"S1:3×12 | S2:3×12 | S3:3×10 | S4:2×12",s:[3,3,3,2]},
+    ]},
+    {type:"bi",label:"Biserie 3",exs:[
+      {n:"Curl femoral con mancuerna (tumbado en banco)",repsHint:"S1:3×12 | S2:3×15 | S3:3×10 | S4:2×12",s:[3,3,3,2]},
+      {n:"Lanzamiento balón medicinal contra pared (explosivo)",repsHint:"S1:3×10 | S2:3×12 | S3:3×10 | S4:2×10",s:[3,3,3,2]},
+    ]},
+  ],
+};
+
+// HIIT con rounds explícitos
+const HIIT=[
+  {
+    week:1,format:"AMRAP",tag:"AMRAP · 6 MIN",
+    desc:"Completa el mayor número de rondas posibles en 6 minutos continuos. Registra cuántas rondas completaste.",
+    pills:["6:00 totales","Sin descanso fijo","1 ronda = 3 ejercicios"],
+    rounds:[
+      {label:"Ronda completa — repetir AMRAP",exs:[
+        {n:"Remo bilateral en polea (explosivo)",detail:"10 reps · potencia máxima"},
+        {n:"Push-up con pausa 1 seg abajo",detail:"8 reps · controlado"},
+        {n:"Lanzamiento balón medicinal al suelo (slam)",detail:"8 reps · máxima potencia"},
+      ]}
+    ],
+    logLabel:"Rondas completadas",logType:"number",logPlaceholder:"ej. 5",logW:"70px"
+  },
+  {
+    week:2,format:"EMOM",tag:"EMOM · 6 MIN",
+    desc:"Cada Minuto En Punto ejecuta el ejercicio asignado. El descanso es el tiempo que sobre hasta el siguiente minuto.",
+    pills:["6 minutos","2 vueltas al circuito","Descanso = tiempo sobrante"],
+    rounds:[
+      {label:"Min 1 y 4",exs:[{n:"Remo en polea bilateral (potencia)",detail:"12 reps explosivas"}]},
+      {label:"Min 2 y 5",exs:[{n:"Press de hombro con mancuernas (bipedestación)",detail:"10 reps rápidas y controladas"}]},
+      {label:"Min 3 y 6",exs:[{n:"Lanzamiento balón medicinal contra pared",detail:"10 reps explosivas · atrapa y lanza"}]},
+    ],
+    logLabel:"Reps totales",logType:"number",logPlaceholder:"ej. 96",logW:"70px"
+  },
+  {
+    week:3,format:"TABATA",tag:"TABATA · 6 MIN",
+    desc:"20 seg de trabajo / 10 seg de descanso × 12 rondas. Alterna ejercicios en orden. Alta intensidad.",
+    pills:["20s trabajo / 10s pausa","12 rondas totales","3 rondas por ejercicio"],
+    rounds:[
+      {label:"Rondas 1-2-3 (min 0–1:30)",exs:[{n:"Jalón al pecho polea (explosivo)",detail:"20 seg máx reps"}]},
+      {label:"Rondas 4-5-6 (min 1:30–3:00)",exs:[{n:"Push-up o flexión de brazos",detail:"20 seg máx reps"}]},
+      {label:"Rondas 7-8-9 (min 3:00–4:30)",exs:[{n:"Sentadilla con mancuerna (goblet rápido)",detail:"20 seg máx reps"}]},
+      {label:"Rondas 10-11-12 (min 4:30–6:00)",exs:[{n:"Lanzamiento balón medicinal suelo (slam)",detail:"20 seg máx potencia"}]},
+    ],
+    logLabel:"Percepción esfuerzo (RPE)",logType:"number",logPlaceholder:"ej. 9",logW:"70px"
+  },
+  {
+    week:4,format:"FOR TIME",tag:"FOR TIME · DESCARGA",
+    desc:"Completa el circuito lo más rápido posible. Semana de descarga: carga al 60%, técnica impecable, sin apresurar la ejecución.",
+    pills:["Objetivo ≤6:00","Carga 60% 1RM","Técnica perfecta"],
+    rounds:[
+      {label:"Vuelta 1",exs:[
+        {n:"15 remos bilaterales en polea",detail:"Carga moderada · controlado"},
+        {n:"12 press de hombro con mancuernas",detail:"Sin impulso"},
+        {n:"10 lanzamientos balón medicinal (pared)",detail:"Atrapar y lanzar fluido"},
+        {n:"10 curl bíceps con mancuernas (lentos)",detail:"3 seg excéntrico"},
+      ]},
+      {label:"Vuelta 2 (idéntica)",exs:[
+        {n:"15 remos bilaterales en polea",detail:"Carga moderada · controlado"},
+        {n:"12 press de hombro con mancuernas",detail:"Sin impulso"},
+        {n:"10 lanzamientos balón medicinal (pared)",detail:"Atrapar y lanzar fluido"},
+        {n:"10 curl bíceps con mancuernas (lentos)",detail:"3 seg excéntrico"},
+      ]},
+    ],
+    logLabel:"Tiempo (mm:ss)",logType:"text",logPlaceholder:"ej. 4:50",logW:"90px"
+  },
+];
+
+let cw=1,cd="A",unit="kg",dat={};
+function load(){try{const r=localStorage.getItem("leo_jul25_v3");if(r)dat=JSON.parse(r);}catch(e){}}
+function persist(){try{localStorage.setItem("leo_jul25_v3",JSON.stringify(dat));}catch(e){}}
+function setUnit(u){
+  unit=u;
+  document.getElementById("uKg").classList.toggle("active",u==="kg");
+  document.getElementById("uLb").classList.toggle("active",u==="lb");
+  document.querySelectorAll(".wlbl").forEach(el=>el.textContent=u);
+}
+
+function buildWeeks(){
+  const wr=document.getElementById("weekRow");wr.innerHTML="";
+  WEEKS.forEach(w=>{
+    const b=document.createElement("button");
+    b.className="w-btn"+(w.n===cw?" active":"");
+    b.innerHTML=`<span class="wn">S${w.n}</span><span class="wp">${["Acumulación","Volumen","Intensidad","Descarga"][w.n-1]}</span>`;
+    b.onclick=()=>{cw=w.n;buildWeeks();render();};
+    wr.appendChild(b);
+  });
+}
+function buildDays(){
+  const dr=document.getElementById("dayRow");dr.innerHTML="";
+  DAYS.forEach(d=>{
+    const isA=d.id===cd;
+    const ac=isA?(d.type==="upper"?"act-u":"act-l"):"";
+    const b=document.createElement("button");
+    b.className="d-btn "+ac;
+    b.innerHTML=`<span class="dc">${d.lbl}</span><span class="dd">${d.desc}</span><span class="dt dt-${d.type[0]}">${d.type==="upper"?"Superior":"Inferior"}</span>`;
+    b.onclick=()=>{cd=d.id;buildDays();render();};
+    dr.appendChild(b);
+  });
+}
+
+function renderWarm(){
+  const tb=document.getElementById("warmBody");tb.innerHTML="";
+  WARM[cd].forEach(ex=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="warm-name">${ex.n}</td><td class="warm-sets">${ex.sets}</td><td class="warm-note">${ex.note}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function renderStrength(){
+  const tb=document.getElementById("exBody");tb.innerHTML="";
+  let gi=0;
+  GROUPS[cd].forEach(grp=>{
+    const lr=document.createElement("tr");
+    lr.innerHTML=`<td colspan="7" style="padding:10px 9px 3px"><span class="group-badge gb-${grp.type==="bi"?"bi":"tri"}">${grp.label} — ${grp.type==="bi"?"Biserie":"Triserie"}</span></td>`;
+    tb.appendChild(lr);
+    grp.exs.forEach((ex,ei)=>{
+      const isFirst=ei===0,isLast=ei===grp.exs.length-1;
+      const k=`w${cw}_${cd}_g${gi}_e${ei}`,sv=dat[k]||{},sr=ex.s[cw-1]||3;
+      const tr=document.createElement("tr");
+      if(isFirst)tr.classList.add("group-top");
+      if(isLast)tr.classList.add("group-bot");
+      const letter="ABCDE"[ei];
+      tr.innerHTML=`
+        <td class="ex-num">${letter}</td>
+        <td><div class="ex-name">${ex.n}</div><div class="ex-reps-hint">${ex.repsHint}</div></td>
+        <td class="ex-ser">${sr}</td>
+        <td class="inp-cell"><div class="inp-g">
+          <input type="number" id="kg_g${gi}_e${ei}" min="0" step="0.5" value="${sv.kg||""}" placeholder="—" oninput="markV(this)" onchange="markV(this)">
+          <span class="inp-lbl wlbl">${unit}</span>
+        </div></td>
+        <td class="inp-cell"><div class="inp-g">
+          <input type="number" id="rp_g${gi}_e${ei}" min="0" step="1" value="${sv.rp||""}" placeholder="—" oninput="markV(this)" onchange="markV(this)">
+          <span class="inp-lbl">reps</span>
+        </div></td>
+        <td class="inp-cell"><div class="inp-g">
+          <input type="number" id="re_g${gi}_e${ei}" min="1" max="10" step="0.5" value="${sv.re||""}" placeholder="—" oninput="markV(this)" onchange="markV(this)">
+          <span class="inp-lbl">RPE</span>
+        </div></td>
+        <td class="inp-cell">
+          <input class="note-inp" type="text" id="nt_g${gi}_e${ei}" value="${sv.nt||""}" placeholder="nota">
+        </td>`;
+      tb.appendChild(tr);
+      ["kg","rp","re"].forEach(p=>{const el=document.getElementById(`${p}_g${gi}_e${ei}`);if(el&&el.value)el.classList.add("has-v");});
+    });
+    gi++;
+  });
+}
+
+function renderHiit(){
+  const h=HIIT[cw-1];
+  const k=`hiit_w${cw}_${cd}`,sv=dat[k]||{};
+  document.getElementById("hiitBadge").textContent=`${h.format} · ${h.pills[0]}`;
+
+  const pillsHtml=h.pills.map(p=>`<span class="hiit-pill pill-green">${p}</span>`).join("");
+
+  const roundsHtml=h.rounds.map((r,ri)=>{
+    const exHtml=r.exs.map(e=>`
+      <div style="margin-top:${r.exs.length>1?'6px':'0'}">
+        <div class="round-ex">${e.n}</div>
+        <div class="round-detail">${e.detail}</div>
+      </div>`).join("");
+    return `<div class="hiit-round">
+      <div class="round-num">${ri+1}</div>
+      <div class="round-body"><div style="font-size:.65rem;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:3px">${r.label}</div>${exHtml}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("hiitCard").innerHTML=`
+    <div class="hiit-top">
+      <span class="hiit-tag">${h.tag}</span>
+      <div class="hiit-meta">
+        <div class="hiit-desc">${h.desc}</div>
+        <div class="hiit-time-row">${pillsHtml}</div>
+      </div>
+    </div>
+    <div class="hiit-rounds">${roundsHtml}</div>
+    <div class="hiit-log">
+      <label>${h.logLabel}</label>
+      <input type="${h.logType}" id="hiit_log" value="${sv.log||""}" placeholder="${h.logPlaceholder}" style="width:${h.logW}">
+      <label style="margin-left:8px">Sensación general</label>
+      <input type="text" id="hiit_feel" value="${sv.feel||""}" placeholder="ej. exigente" style="width:100px">
+    </div>`;
+}
+
+function render(){
+  const w=WEEKS.find(x=>x.n===cw),d=DAYS.find(x=>x.id===cd);
+  document.getElementById("sesPhase").textContent=`Sem ${w.n} · ${w.ph} · ${d.desc}`;
+  document.getElementById("sesRpe").textContent=w.rpe;
+  document.getElementById("sesDur").textContent=w.dur;
+  renderWarm();renderStrength();renderHiit();updateProgress();
+}
+
+function markV(el){el.value?el.classList.add("has-v"):el.classList.remove("has-v");}
+
+function save(){
+  let gi=0;
+  GROUPS[cd].forEach(grp=>{
+    grp.exs.forEach((_,ei)=>{
+      const k=`w${cw}_${cd}_g${gi}_e${ei}`;
+      dat[k]={
+        kg:(document.getElementById(`kg_g${gi}_e${ei}`)||{}).value||"",
+        rp:(document.getElementById(`rp_g${gi}_e${ei}`)||{}).value||"",
+        re:(document.getElementById(`re_g${gi}_e${ei}`)||{}).value||"",
+        nt:(document.getElementById(`nt_g${gi}_e${ei}`)||{}).value||"",
+      };
+    });gi++;
+  });
+  const hk=`hiit_w${cw}_${cd}`;
+  dat[hk]={
+    log:(document.getElementById("hiit_log")||{}).value||"",
+    feel:(document.getElementById("hiit_feel")||{}).value||"",
+  };
+  persist();
+  const ok=document.getElementById("saveOk");
+  ok.classList.add("show");setTimeout(()=>ok.classList.remove("show"),2200);
+  updateProgress();
+}
+
+function clearSes(){
+  let gi=0;
+  GROUPS[cd].forEach(grp=>{
+    grp.exs.forEach((_,ei)=>{
+      delete dat[`w${cw}_${cd}_g${gi}_e${ei}`];
+      ["kg","rp","re"].forEach(p=>{const e=document.getElementById(`${p}_g${gi}_e${ei}`);if(e){e.value="";e.classList.remove("has-v");}});
+      const nt=document.getElementById(`nt_g${gi}_e${ei}`);if(nt)nt.value="";
+    });gi++;
+  });
+  delete dat[`hiit_w${cw}_${cd}`];
+  const hl=document.getElementById("hiit_log"),hf=document.getElementById("hiit_feel");
+  if(hl)hl.value="";if(hf)hf.value="";
+  persist();updateProgress();
+}
+
+function updateProgress(){
+  let tex=0,fil=0,ses=0;
+  const tses=WEEKS.length*DAYS.length;
+  WEEKS.forEach(w=>DAYS.forEach(d=>{
+    let has=false,gi=0;
+    GROUPS[d.id].forEach(grp=>{
+      grp.exs.forEach((_,ei)=>{
+        tex++;
+        const s=dat[`w${w.n}_${d.id}_g${gi}_e${ei}`]||{};
+        if(s.kg||s.rp){fil++;has=true;}
+      });gi++;
+    });
+    if(has)ses++;
+  }));
+  const p=tex>0?Math.round(fil/tex*100):0,sp=Math.round(ses/tses*100);
+  document.getElementById("hSes").textContent=`${ses}/${tses}`;
+  document.getElementById("hPct").textContent=`${p}%`;
+  document.getElementById("statsGrid").innerHTML=`
+    <div class="sc"><div class="sv">${ses}</div><div class="sl">Sesiones</div><div class="ss">de ${tses} en el bloque</div><div class="pb"><div class="pbi" style="width:${sp}%"></div></div></div>
+    <div class="sc"><div class="sv">${fil}</div><div class="sl">Ejercicios</div><div class="ss">con datos registrados</div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>
+    <div class="sc"><div class="sv">${p}%</div><div class="sl">Completado</div><div class="ss">bloque 4 semanas</div><div class="pb"><div class="pbi" style="width:${p}%"></div></div></div>`;
+  const wg=document.getElementById("wkGrid");wg.innerHTML="";
+  WEEKS.forEach(w=>{
+    const div=document.createElement("div");div.className="wk-c";
+    let html=`<div class="wk-t">Semana ${w.n}</div><div class="wk-days">`;
+    DAYS.forEach(d=>{
+      let has=false,gi=0;
+      GROUPS[d.id].forEach(grp=>{grp.exs.forEach((_,ei)=>{const s=dat[`w${w.n}_${d.id}_g${gi}_e${ei}`]||{};if(s.kg||s.rp)has=true;});gi++;});
+      html+=`<div class="wk-d ${has?"d"+d.type[0]:""}"></div>`;
+    });
+    const wSes=DAYS.filter(d=>{let has=false,gi=0;GROUPS[d.id].forEach(grp=>{grp.exs.forEach((_,ei)=>{const s=dat[`w${w.n}_${d.id}_g${gi}_e${ei}`]||{};if(s.kg||s.rp)has=true;});gi++;});return has;}).length;
+    html+=`</div><div class="wk-p">${wSes}/4 días</div>`;
+    div.innerHTML=html;wg.appendChild(div);
+  });
+}
+
+load();buildWeeks();buildDays();render();
+</script>
+</body>
+</html>
